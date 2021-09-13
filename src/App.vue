@@ -1,21 +1,23 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <main-tab-bar/>
+    <main-tar-bar/>
   </div>
 </template>
 
 <script>
-import MainTabBar from "./components/mainTarBar/MainTarBar"
+import MainTarBar from "./components/contents/mainTarBar/MainTarBar.vue"
 
-export default {
-  name: 'App',
-  components: {
-    MainTabBar
+export default{
+  name:'App',
+  components:{
+    MainTarBar
   }
 }
+
 </script>
 
 <style>
 @import "./assets/css/base.css";
+@import "./assets/css/normalize.css";
 </style>
