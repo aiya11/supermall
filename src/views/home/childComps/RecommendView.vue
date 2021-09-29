@@ -25,7 +25,7 @@ props:{
 
 <style>
 .recommend{
-  display:flex;
+ display:flex;
  text-align:center;
  margin-top:10px;
  font-size:12px;
@@ -37,7 +37,7 @@ props:{
 }
 
 .recommend-item img{
-   width: 70px;
+  width: 70px;
   height:70px;
   margin-bottom:10px
 }

@@ -13,7 +13,7 @@ name:"TabControl",
 props:{
   titles:{
     type:Array,
-    default(){
+    default(){//当你的默认值是一个对象或者数组的时候，这里就是函数  xx(){}
       return []
     }
   }
@@ -25,7 +25,7 @@ data(){
 },
 methods:{
   itemclick(index){
-    this.currentIndex=index;
+    this.currentIndex = index;
     this.$emit('tabClick',index)
   }
 }

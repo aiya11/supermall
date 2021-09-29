@@ -28,10 +28,6 @@ data(){
 },
 computed:{
   isActive(){
-    // /home -> item(/home) =true
-    // /home -> item(/category) =false
-    // /home -> item(/cart) =false
-    // /home -> item(/profile) =false
     return this.$route.path.indexOf(this.path) !==  -1
   },
   activeStyle(){

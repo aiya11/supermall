@@ -1,114 +1,23 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav-bar"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners="banners"/>
-    <recommend-view :recommends="recommends"/>
-    <feature-view/>
-    <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"/>
-    <good-list :goods="showGoods"/>
 
-    <ul>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-      <li>列表</li>
-    </ul>
+   <scroll class="content" 
+           ref="scroll" 
+           :probe-type="3" 
+           @scroll="contentScroll"
+           :pull-up-load="true"
+           @pullingUp="loadMore">
+      <home-swiper :banners="banners"/>
+      <recommend-view :recommends="recommends"/>
+      <feature-view/>
+      <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"/>
+      <good-list :goods="showGoods"/>
+   </scroll>
+
+   <!-- 组件是不能直接监听点击的 -->
+   <back-top @click.native="backClick" v-show="isShowBackTop"/><!-- nactiv监听组件点击 -->
+
   </div>
 </template>
 
@@ -121,6 +30,8 @@ import FeatureView from "./childComps/FeatureView.vue"
 import NavBar from "components/common/navbar/NavBar.vue"
 import TabControl from "components/contents/tabControl/TabControl"
 import GoodList from "components/contents/goods/GoodsList.vue"
+import Scroll from "components/common/scroll/Scroll"
+import BackTop from "components/contents/backTop/BackTop"
 
 import {getHomeMultidata,getHomeGoods} from 'network/home'
 
@@ -133,9 +44,11 @@ components:{
   RecommendView,
   FeatureView,
  
- NavBar,
- TabControl,
- GoodList,
+  NavBar,
+  TabControl,
+  GoodList,
+  Scroll,
+  BackTop,
 },
 data(){
 return{
@@ -146,7 +59,8 @@ return{
     'new':{page:0,list:[]},
     'sell':{page:0,list:[]},
   },
-  currentType:"pop"
+  currentType:"pop",
+  isShowBackTop:false
 }
 },
 computed:{
@@ -179,6 +93,18 @@ tabClick(index){
   }
 },
 
+backClick(){
+this.$refs.scroll.scrollTo(0,0)
+},
+
+contentScroll(position){
+ this.isShowBackTop = -position.y > 1000
+},
+
+loadMore(){
+  this.getHomeGoods(this.currentType)
+},
+
   /* 网络请求相关的方法 */
   getHomeMultidata(){
 getHomeMultidata().then(res=>{
@@ -192,16 +118,19 @@ getHomeGoods(type){
   getHomeGoods(type , page).then(res => {
     this.goods[type].list.push(...res.data.list)
     this.goods[type].page += 1
+
+    this.$refs.scroll.finishPullUp()
   })
 },
 }
 }
 </script>
 
-<style scoped>
+<style scoped>/* 不加scoped的话，要是class名字有重复，会都生效 */
 #home{
-  padding-top: 44px;
-  
+  padding-top:44px;
+  position:relative;
+  height:100vh;/* vh：viewport height 视口高，不是正真的高，而是屏幕可视高  意思是100%的视口 50vh ->50%*/
 }
 
 .home-nav-bar{
@@ -220,4 +149,20 @@ z-index: 9;
   top:44px;
   z-index:9
 }
+
+/* 方式一 */
+.content{/* 
+  height:300px; *//* 
+  overflow: hidden; */
+  position: absolute;
+  top:44px;
+  bottom:49px;
+  left:0;
+  right:0;
+}
+
+/* 方式二 */
+/* .content{
+  height:calc(100% - 93px);
+} */
 </style>
