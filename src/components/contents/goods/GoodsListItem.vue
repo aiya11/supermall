@@ -1,6 +1,6 @@
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <img :src="showImage" alt="" @load="imageLoad"><!-- @load="imageLoad"监听每一张图片加载 -->
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -18,6 +18,27 @@ props:{
     default(){
       return {}
     }
+  }
+},
+computed:{
+  showImage(){
+    return this.goodsItem.image || this.goodsItem.show.img
+  }
+},
+methods:{
+  imageLoad(){//这里是通过事件总线发出去的，在Home.vue中就可以拿到了 /* 默认情况下$bus是没有值的，所以这里需要给它赋值一个Vue实例，在main.js中赋值 */
+    this.$bus.$emit("itemImageLoad")
+
+  //问题：这个事件总线是传到Home.vue里，但是现在Detail.vue也在用，就需要修改一下
+  //方式一 用路由的方式  -> 这个有问题
+  // if(this.$router.path.indexOf('/home') !=-1){
+  //   this.$bus.$emit("homeItemImageLoad")
+  // }else if(this.$router.path.indexOf('detail')!=-1){
+  //   this.$bus.$emit('detailItemImageLoad')
+  // }
+  },
+  itemClick(){
+    this.$router.push("/detail/" + this.goodsItem.iid)
   }
 }
 }

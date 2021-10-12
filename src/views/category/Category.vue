@@ -170,7 +170,7 @@ methods:{
 }
 </script>
 
-<style>
+<style scoped>
 .wrapper{
   height:150px;
   background-color:aquamarine;
