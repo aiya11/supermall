@@ -11,7 +11,11 @@
        <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
     <detail-bottom-bar @addCart="addToCart" />
+
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
+    <!-- <toast :message="message" :show="show"/> -->
+
+
    
   
   </div>
@@ -30,6 +34,7 @@ import DetailBottomBar from "./childComps/DeatilBottomBar"
 import Scroll from "components/common/scroll/Scroll"
 import GoodsList from "../../components/contents/goods/GoodsList.vue"
 /* import BackTop from "components/contents/backTop/BackTop" 抽到混入里面去了 */
+/* import Toast from "components/common/toast/Toast" */
 
 import {getDetail ,Goods,Shop,GoodsParam,getRecommend} from "network/detail"
 import {debounce} from "common/utils"
@@ -49,6 +54,7 @@ components:{
   DetailBottomBar,
   Scroll,
   GoodsList,
+  /* Toast, */
   /* BackTop,抽到混入里面去了 */
   
 },
@@ -66,6 +72,8 @@ data(){
     themeTopYs:[],
     getThemeTopY:null,
     currentIndex:0,
+    /* message:"",
+    show:false, */
     /* isShowBackTop:false,  抽到混入里面去了*/
     //itemImageListener:null,// ->这个写在混入中了
   }
@@ -147,7 +155,7 @@ created(){
 },
 
 methods:{
-  ...mapActios(['']),
+  ...mapActions(['addCart']),
   imageLoad(){
      //this.$refs.scroll.refresh()
      this.refresh()
@@ -217,12 +225,28 @@ methods:{
           product.price = this.goods.realPrice;
           product.iid = this.iid; //-> 这个必须传，作为商品的标识
 
-    //2.将商品添加到购物车内 -> 用vuex  
+    //2.将商品添加到购物车内 (1.Promise,2.mapActions) -> 用vuex  
     //this.$store.cartList.push(product)
     //this.$store.commit('addCart',product)
-    this.$store.dispatch('addCart',product).then(res=>{
-      console.log(res)//重要
+
+    this.addCart(product).then(res =>{
+      // this.show = true;
+      // this.message = res;
+
+      // setTimeout(()=>{
+      //   this.show = false;
+      //   this.message = ''
+      // },1500)
+
+      //console.log(this.$toast)
+      // this.$toast.show(res,2000)
+      this.$toast.show(res)
+      //this.$toast.show()
     })
+    //上面是简洁的写法 ->效果
+    // this.$store.dispatch('addCart',product).then(res=>{
+    //   console.log(res)//重要
+    // })
   }
 },
 

@@ -14,7 +14,7 @@ export default { //这里不可以被跟踪
             if (oldProduct) {
                 //oldProduct.count += 1//-> 这个应该放在mutations里
                 context.commit(ADD_COUNTER, oldProduct)
-                resolve('当前商品数量加一') //重要
+                resolve('当前商品数量+1') //重要
             } else {
                 payload.count = 1
 
